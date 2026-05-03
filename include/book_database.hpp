@@ -25,7 +25,7 @@ public:
     using reverse_iterator = typename BookContainer::reverse_iterator;
     using reference = typename BookContainer::reference;
     using container_type = BookContainer;
-    using AuthorContainer = std::unordered_set<std::string_view>;
+    using AuthorContainer = std::unordered_set<std::string>;
 
     BookDatabase() = default;
 
@@ -43,20 +43,23 @@ public:
     const_iterator end() const { return books_.end(); };
     size_t size() const { return books_.size(); };
 
-    void PushBack(const Book &value) {
-        books_.push_back(value);
-        authors_.insert(value.author);
+    void PushBack(const Book &book) {
+        books_.push_back(book);
+        auto [it, _] = authors_.insert(std::string(book.author));
+        books_.back().author = std::string_view(*it);
     }
-    void PushBack(Book &&value) {
-        books_.push_back(value);
-        authors_.insert(value.author);
+    void PushBack(Book &&book) {
+        auto [it, _] = authors_.insert(std::string(book.author));
+        book.author = std::string_view(*it);
+        books_.push_back(std::move(book));
     }
 
     template <typename... Args>
     reference EmplaceBack(Args &&...args) {
         books_.emplace_back(std::forward<Args>(args)...);
         reference ref = books_.back();
-        authors_.insert(ref.author);
+        auto [it, _] = authors_.insert(std::string(ref.author));
+        ref.author = std::string_view(*it);
         return ref;
     }
 

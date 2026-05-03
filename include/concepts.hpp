@@ -15,6 +15,7 @@ concept BookContainerLike = requires(T t) {
     t.rbegin();
     t.rend();
     t.size();
+    t.back();
     t.clear();
     requires std::is_same_v<typename T::value_type, Book>;
     requires requires { t.emplace_back(std::declval<typename T::value_type>()); };
