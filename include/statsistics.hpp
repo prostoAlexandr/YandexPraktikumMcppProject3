@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <cstddef>
 #include <iterator>
 #include <numeric>
 #include <random>
@@ -14,7 +15,6 @@
 #include "heterogeneous_lookup.hpp"
 
 #include <flat_map>
-#include <print>
 
 namespace bookdb {
 
@@ -41,13 +41,13 @@ struct RatingCounter {
 
 }  // namespace
 
-template <BookIterator It, typename Comparator = TransparentStringLess>
+template <BookIterator It, typename Comparator = TransparentGenreLess>
 auto calculateGenreRatings(const It cbegin, const It cend, Comparator comp = {}) {
-    std::flat_map<std::string_view, RatingCounter, Comparator> map;
+    std::flat_map<Genre, RatingCounter, Comparator> map;
     std::for_each(cbegin, cend, [&map](const auto &book) {
         auto it = map.find(book);
         if (it == map.end()) {
-            map.emplace(book.author, RatingCounter{book.rating, 1});
+            map.emplace(book.genre, RatingCounter{book.rating, 1});
             return;
         }
 
@@ -56,8 +56,9 @@ auto calculateGenreRatings(const It cbegin, const It cend, Comparator comp = {})
     });
 
     std::flat_map<std::string_view, double> result;
-    std::for_each(map.begin(), map.end(),
-                  [&result, &map](const auto &rc) { result.emplace(rc.first, rc.second.rating / rc.second.counter); });
+    std::for_each(map.begin(), map.end(), [&result, &map](const auto &rc) {
+        result.emplace(GenreToString(rc.first), rc.second.rating / rc.second.counter);
+    });
     return result;
 }
 
@@ -79,6 +80,7 @@ template <BookContainerLike T, BookComparator Comparator>
 auto getTopNBy(BookDatabase<T> &cont, size_t count, Comparator comp = {}) {
     std::sort(cont.begin(), cont.end(), comp);
     std::vector<std::reference_wrapper<const Book>> result;
+    count = std::min(count, static_cast<size_t>(std::distance(cont.rbegin(), cont.rend())));
     std::transform(cont.rbegin(), cont.rbegin() + count, std::back_inserter(result),
                    [](const auto &val) { return std::ref(val); });
     return result;

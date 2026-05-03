@@ -23,6 +23,22 @@ struct TransparentStringLess {
     }
 };
 
+struct TransparentGenreLess {
+    using is_transparent = void;
+    bool operator()(Genre g, const Book& book) const
+    {
+        return g < book.genre;
+    }
+    bool operator()(const Book& book, Genre g) const
+    {
+        return book.genre < g;
+    }
+    bool operator()(Genre lhs, Genre rhs) const
+    {
+        return lhs < rhs;
+    }
+};
+
 struct TransparentStringEqual {
     using is_transparent = void;
 };

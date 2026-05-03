@@ -160,15 +160,8 @@ Author histogram: {
 }
 
 Average ratings by genres: {
-        "Aldous Huxley": 4.5,
-        "Charlotte Brontë": 4.6,
-        "F. Scott Fitzgerald": 4.5,
-        "George Orwell": 4.2,
-        "Harper Lee": 4.8,
-        "J.D. Salinger": 4.3,
-        "J.R.R. Tolkien": 4.9,
-        "Jane Austen": 4.7,
-        "William Golding": 4.2
+        "Fiction": 4.55,
+        "SciFi": 4.25
 }
 
 Average books rating in library: 4.49
