@@ -9,7 +9,7 @@
 namespace bookdb {
 
 template <typename T>
-concept BookContainerLike = requires(T t) {
+concept BookContainerLike = requires(T t, typename T::value_type b) {
     t.begin();
     t.end();
     t.rbegin();
@@ -17,9 +17,9 @@ concept BookContainerLike = requires(T t) {
     t.size();
     t.back();
     t.clear();
+    t.emplace_back(b);
+    t.push_back(b);
     requires std::is_same_v<typename T::value_type, Book>;
-    requires requires { t.emplace_back(std::declval<typename T::value_type>()); };
-    requires requires { t.push_back(std::declval<typename T::value_type>()); };
 };
 
 template <typename T>
@@ -29,9 +29,13 @@ template <typename S, typename I>
 concept BookSentinel = true;
 
 template <typename P>
-concept BookPredicate = requires(const P p) { requires std::is_convertible_v<typeof(p(std::declval<Book>())), bool>; };
+concept BookPredicate = requires(const P p, const Book &b) {
+    { p(b) } -> std::convertible_to<bool>;
+};
 
 template <typename C>
-concept BookComparator = requires(const C c) { requires std::is_convertible_v<typeof(c(std::declval<Book>(), std::declval<Book>())), bool>; };
+concept BookComparator = requires(const C c, const Book &b1, const Book &b2) {
+    { c(b1, b2) } -> std::convertible_to<bool>;
+};
 
 }  // namespace bookdb

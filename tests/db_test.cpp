@@ -222,10 +222,13 @@ TEST(BookDatabaseTest, GetTopNByTest) {
     auto top_by_author = getTopNBy(bdb, 2, comp::LessByAuthor{});
     EXPECT_EQ(top_by_author.size(), 2);
     EXPECT_EQ(top_by_author[0].get().author, "Harper Lee");
+    EXPECT_EQ(top_by_author[1].get().author, "George Orwell");
 
     auto top_by_popularity = getTopNBy(bdb, 3, comp::LessByPopularity{});
     EXPECT_EQ(top_by_popularity.size(), 3);
     EXPECT_DOUBLE_EQ(top_by_popularity[0].get().read_count, 190);
+    EXPECT_DOUBLE_EQ(top_by_popularity[1].get().read_count, 156);
+    EXPECT_DOUBLE_EQ(top_by_popularity[2].get().read_count, 143);
 
     // Boundaries check
     top_by_popularity = getTopNBy(bdb, 10, comp::LessByPopularity{});

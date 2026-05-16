@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <flat_map>
 #include <format>
 #include <stdexcept>
@@ -15,15 +16,15 @@ enum class Genre { Fiction, NonFiction, SciFi, Biography, Mystery, Unknown };
 
 constexpr Genre GenreFromString(std::string_view s) {
     // Ваш код здесь
-    if (!s.compare("Fiction"))
+    if (s == "Fiction")
         return Genre::Fiction;
-    else if (!s.compare("NonFiction"))
+    else if (s == "NonFiction")
         return Genre::NonFiction;
-    else if (!s.compare("SciFi"))
+    else if (s == "SciFi")
         return Genre::SciFi;
-    else if (!s.compare("Biography"))
+    else if (s == "Biography")
         return Genre::Biography;
-    else if (!s.compare("Mystery"))
+    else if (s == "Mystery")
         return Genre::Mystery;
     return Genre::Unknown;
 }
@@ -57,11 +58,13 @@ struct Book {
     double rating;
     int read_count;
 
-    constexpr Book(const std::string &t, std::string_view a, int y, Genre g, double r, int rc)
-        : title(t), author(a), year(y), genre(g), rating(r), read_count(rc) {}
+    constexpr Book(std::string t, std::string_view a, int y, Genre g, double r, int rc)
+        : title(std::move(t)), author(a), year(y), genre(g), rating(r), read_count(rc) {}
 
-    constexpr Book(const std::string &t, std::string_view a, int y, std::string_view g, double r, int rc)
-        : title(t), author(a), year(y), genre(GenreFromString(g)), rating(r), read_count(rc) {}
+    constexpr Book(std::string t, std::string_view a, int y, std::string_view g, double r, int rc)
+        : title(std::move(t)), author(a), year(y), genre(GenreFromString(g)), rating(r), read_count(rc) {}
+
+    operator double() const { return rating; }
 };
 
 }  // namespace bookdb
